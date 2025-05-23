@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>高校录取通知书生成系统</title>
+    <style>
+        .container { max-width: 800px; margin: 0 auto; font-family: "Microsoft YaHei" }
+        .form-group { margin-bottom: 15px }
+        label { display: block; margin-bottom: 5px }
+        select, input { width: 100%; padding: 8px }
+        button { background: #1890ff; color: white; border: none; padding: 10px 20px }
+        #notice { margin-top: 30px; border: 1px solid #eee; padding: 30px; position: relative }
+        .stamp { position: absolute; right: 50px; bottom: 30px; width: 120px }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>高校录取通知书生成系统</h1>
+        
+        <div class="form-area">
+            <div class="form-group">
+                <label>考生姓名：</label>
+                <input type="text" id="name" placeholder="请输入真实姓名">
+            </div>
+            <div class="form-group">
+                <label>录取院系：</label>
+                <select id="department" onchange="loadMajors()">
+                    <option value="">-- 请选择院系 --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>录取专业：</label>
+                <select id="major" disabled>
+                    <option value="">-- 请先选择院系 --</option>
+                </select>
+            </div>
+            <button onclick="generateNotice()">生成通知书</button>
+        </div>
+
+        <div id="notice" style="display:none">
+            <h2 style="text-align:center">录取通知书</h2>
+            <div id="content"></div>
+            <img src="university-seal.png" class="stamp">
+        </div>
+    </div>
+
+    <script>
+        // 模拟大数据量院系专业数据
+        const departmentData = {
+            "计算机学院": ["计算机科学与技术","软件工程","人工智能","数据科学"],
+            "经管学院": ["金融学","工商管理","会计学","国际经济与贸易"],
+            "医学院": ["临床医学","口腔医学","药学","护理学"]
+            // 可继续扩展其他院系...
+        };
+
+        // 初始化院系下拉框
+        window.onload = function() {
+            const deptSelect = document.getElementById("department");
+            Object.keys(departmentData).forEach(dept => {
+                const opt = document.createElement("option");
+                opt.value = dept;
+                opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            });
+        };
+
+        // 动态加载专业数据
+        function loadMajors() {
+            const dept = document.getElementById("department").value;
+            const majorSelect = document.getElementById("major");
+            
+            majorSelect.innerHTML = '<option value="">-- 请选择专业 --</option>';
+            if(!dept) {
+                majorSelect.disabled = true;
+                return;
+            }
+            
+            majorSelect.disabled = false;
+            departmentData[dept].forEach(major => {
+                const opt = document.createElement("option");
+                opt.value = major;
+                opt.textContent = major;
+                majorSelect.appendChild(opt);
+            });
+        }
+
+        // 生成通知书
+        function generateNotice() {
+            const name = document.getElementById("name").value.trim();
+            const dept = document.getElementById("department").value;
+            const major = document.getElementById("major").value;
+            
+            if(!name || !dept || !major) {
+                alert("请填写完整信息");
+                return;
+            }
+
+            document.getElementById("content").innerHTML = `
+                <p>${name}同学：</p>
+                <p style="text-indent:2em">经审核，你已被我校${dept}${major}专业正式录取。</p>
+                <p style="text-align:right;margin-top:50px">××大学招生办公室</p>
+                <p style="text-align:right">2025年5月23日</p>
+            `;
+            
+            document.getElementById("notice").style.display = "block";
+        }
+    </script>
+</body>
+</html>
